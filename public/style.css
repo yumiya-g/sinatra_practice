@@ -1,0 +1,129 @@
+body {
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", Meiryo, sans-serif;
+  font-size: 100%;
+}
+
+main {
+  margin: 0 auto;
+  max-width: 1000px;
+  & p{
+    margin: 1em 0;
+  }
+
+  & article {
+    border-radius: 0.6rem;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    height: 100lvh;
+    margin: 0 auto;
+    padding: 30px;
+    max-width: 1000px;
+
+    @media (min-width: 400px) {
+      width: 96%;
+    }
+    & header {
+      border-bottom: 1px solid #cdcdcd;
+      padding-bottom: 1.125em;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      width: 100%;
+      padding-bottom: 1.2rem;
+      & h1{
+        color: red;
+        & a {
+          text-decoration: none;
+          
+        }
+      }
+      & p {
+        margin: 0;
+        & button {
+          border: 1px solid #a7a7a7;
+          border-radius: 5px;
+          padding: 0.2rem 0.4rem;
+        }
+      }
+    }
+    & ul {
+      list-style-type: disc;
+      & li {
+        margin: 0.2em 0;
+        & a {
+          padding: 2px 6px;
+        }
+        & a:hover {
+          background: #eee;
+          border-radius: 4px;
+          transition: all 0.2s;
+          padding: 2px 6px;
+        }
+      }
+    }
+    & div#form,
+    & div#edit {
+      margin: 1.25em auto;
+      max-width: 100%;
+      & .col {
+        container-type: inline-size;
+        margin: 0 auto;
+        max-width: 100%;
+        & label {
+          display: grid;
+          margin-bottom: 2em;
+          & input,
+          & textarea {
+            background-color: #fafafa;
+            border: 1px solid #a1a1a1;
+            border-radius: 4px;
+            height: 2.6rem;
+            margin: 0.5em 0 0;
+            padding: 0.6em;
+          }
+          & textarea {
+            min-height: 10em;
+          }
+        }
+        & button {
+          display: block;
+          height: 3em;
+          margin: 0 auto;
+          width: 8em;
+        }
+        & ul {
+          display: flex;
+          justify-content: space-between;
+          list-style-type: none;
+          margin: 1em auto;
+          max-width: 60%;
+        }
+        & .container {
+          display: flex;
+          padding-inline-start: inherit;
+          & li {
+            padding: 3px;
+          }
+        }
+        @container (max-width < 767px) {
+          .container {
+            max-width: 50%;
+          }
+        }
+        @container (width < 500px) {
+          .container {
+            display: block;
+            & li {
+              margin: 6px;
+              & button {
+                max-width: 130px;
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

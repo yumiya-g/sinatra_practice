@@ -1,0 +1,22 @@
+<main>
+  <article>
+    <%= render(:erb, :header) %>
+    <div id="edit">
+      <p>ID:<%= @params["id"] %></p>
+      <h1><%= h(@memos[:title]) %></h1>
+      <p><%= h(@memos[:content]) %></p>
+
+      <div class="col">
+        <ul class="container">
+          <li><button onclick="location.href='<%= @params["id"] %>/edit'">変更</button></li>
+          <li>
+            <form method="post" action="/memos/<%= @params["id"] %>/delete">
+              <input type="hidden" name="_method" value="delete">
+              <button onclick="location.href='<%= @params["id"] %>/delete'">削除</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </article>
+</main>

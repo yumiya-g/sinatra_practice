@@ -1,0 +1,6 @@
+  <header>
+    <h1><a href="/"><%= @app_title %></a></h1>
+    <% if @env["REQUEST_PATH"] == "/memos" %>
+    <p><button onclick="location.href='memos/create'">追加する</button></p>
+    <% end %>
+  </header>

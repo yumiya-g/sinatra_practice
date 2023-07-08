@@ -1,0 +1,10 @@
+<main>
+  <article>
+    <%= render(:erb, :header) %>
+    <ul>
+    <% @memos.map do |memo| %>
+      <li><a href="memos/<%= memo.keys.first %>"><%= h(memo.values.first["title"]) %></a></li>
+    <% end %>
+    </ul>
+  </article>
+</main>
