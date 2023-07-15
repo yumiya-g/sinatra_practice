@@ -19,7 +19,7 @@ helpers do
   end
 end
 
-class Memo
+class MemoDB
   def initialize(memo_data)
     @latest_memo_id = memo_data['latest_id']
     @memo_lists = memo_data['memo_lists']
@@ -68,10 +68,10 @@ class Memo
     end
   end
 
-  def self.parse(filename)
-    file = File.open(filename, 'r')
+  def self.generate_memo_lists
+    file = File.open(DB_FILE_NAME, 'r')
     memo_data = JSON.parse(file.read)
-    Memo.new(memo_data)
+    MemoDB.new(memo_data)
   end
 end
 
@@ -80,7 +80,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = Memo.parse(DB_FILE_NAME).show_memo_lists
+  @memos = MemoDB.generate_memo_lists.show_memo_lists
 
   erb :index
 end
@@ -90,27 +90,27 @@ get '/memos/create' do
 end
 
 post '/memos/new' do
-  Memo.parse(DB_FILE_NAME).create_new_memo(@params['title'], @params['content'])
+  MemoDB.generate_memo_lists.create_new_memo(@params['title'], @params['content'])
 
   redirect '/memos'
   erb :index
 end
 
 get '/memos/:id' do
-  @memos = Memo.parse(DB_FILE_NAME).show_memo_details(@params['id'])
-  pass if @memos.nil?
+  @memo = MemoDB.generate_memo_lists.show_memo_details(@params['id'])
+  pass if @memo.nil?
 
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memos = Memo.parse(DB_FILE_NAME).show_memo_details(@params['id'])
+  @memo = MemoDB.generate_memo_lists.show_memo_details(@params['id'])
 
   erb :edit
 end
 
 patch '/memos/:id/edit' do
-  @memos = Memo.parse(DB_FILE_NAME).update_memo_details(@params)
+  MemoDB.generate_memo_lists.update_memo_details(@params)
 
   redirect "/memos/#{@params['id']}"
   erb :show
@@ -121,7 +121,7 @@ get '/memos/*' do
 end
 
 delete '/memos/:id/delete' do
-  @memos = Memo.parse(DB_FILE_NAME).delete_memo(@params)
+  MemoDB.generate_memo_lists.delete_memo(@params)
 
   redirect '/'
   erb :index
