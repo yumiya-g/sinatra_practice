@@ -23,7 +23,6 @@ class Memo
   def initialize(memo_data)
     @latest_memo_id = memo_data['latest_id']
     @memo_lists = memo_data['memo_lists']
-    @memo_ids = @memo_lists.map(&:keys).flatten
   end
 
   def show_memo_lists
@@ -40,23 +39,11 @@ class Memo
   end
 
   def show_memo_details(memo_id)
-    return unless @memo_ids.include?(memo_id)
-
-    memo = @memo_lists.map do |m|
-      next unless m.keys.first == memo_id
-
-      @title = m.values.first['title']
-      @content = m.values.first['content']
-      @existing_id = memo_id
-      { title: @title, content: @content, existing_id: @existing_id }
-    end
-
-    memo.compact.first
+    memo = @memo_lists.find { |list| list[memo_id] }
+    { title: memo[memo_id]['title'], content: memo[memo_id]['content'] }
   end
 
   def update_memo_details(params)
-    return unless @memo_ids.include?(params['id'])
-
     edited_memo = { params['id'] => { 'title' => params['title'], 'content' => params['content'] } }
     updated_memo = @memo_lists.map do |m|
       m.key?(edited_memo.keys.first) ? edited_memo : m
@@ -67,8 +54,6 @@ class Memo
   end
 
   def delete_memo(params)
-    return unless @memo_ids.include?(params['id'])
-
     @memo_lists.delete_if do |m|
       m.key?(params['id'])
     end
