@@ -3,7 +3,7 @@
 require 'json'
 require 'sinatra'
 
-# TODO: 提出時に削除する
+# TODO:提出時に削除する
 require 'sinatra/reloader'
 require 'debug'
 
@@ -45,20 +45,20 @@ class MemoDB
 
   def update_memo_details(params)
     edited_memo = { params['id'] => { 'title' => params['title'], 'content' => params['content'] } }
-    updated_memo = @memo_lists.map do |m|
-      m.key?(edited_memo.keys.first) ? edited_memo : m
+    updated_memo = @memo_lists.map do |list|
+      list.key?(edited_memo.keys.first) ? edited_memo : list
     end
-    updated_memos = JSON.generate({ "latest_id": @latest_memo_id, "memo_lists": updated_memo })
+    updated_memos = JSON.generate({ latest_id: @latest_memo_id, memo_lists: updated_memo })
 
     save_memo_data(updated_memos)
   end
 
   def delete_memo(params)
-    @memo_lists.delete_if do |m|
-      m.key?(params['id'])
+    @memo_lists.delete_if do |list|
+      list.key?(params['id'])
     end
 
-    deleted_memos = JSON.generate({ "latest_id": @latest_memo_id, "memo_lists": @memo_lists })
+    deleted_memos = JSON.generate({ latest_id: @latest_memo_id, memo_lists: @memo_lists })
     save_memo_data(deleted_memos)
   end
 
