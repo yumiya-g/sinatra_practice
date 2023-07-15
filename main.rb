@@ -3,7 +3,7 @@
 require 'json'
 require 'sinatra'
 
-# 提出時に削除する
+# TODO: 提出時に削除する
 require 'sinatra/reloader'
 require 'debug'
 
@@ -26,22 +26,15 @@ class Memo
     @memo_ids = @memo_lists.map(&:keys).flatten
   end
 
-  def generate_memo_lists
+  def show_memo_lists
     @memo_lists
   end
 
   def create_new_memo(title, content)
-    # latest_idキーからvalueを取得して、カウントをプラス１（初回投稿時には、ID1を作成）する
-    @latest_memo_id = @latest_memo_id.zero? ? 1 : @latest_memo_id + 1
-
-    # 新しいメモデータ（ハッシュ形式）を作成する
+    @latest_memo_id += 1
     new_memo = { @latest_memo_id => { 'title' => title, 'content' => content } }
-
-    # 新しいメモデータを追加する
-    @memos_data = @memo_lists.push new_memo
-
-    # データを追加したhashを、JSONファイル形式に変換
-    updated_memos = JSON.generate({ "latest_id": @latest_memo_id, "memo_lists": @memos_data })
+    memos_data = @memo_lists.push new_memo
+    updated_memos = JSON.generate({ latest_id: @latest_memo_id, memo_lists: memos_data })
 
     save_memo_data(updated_memos)
   end
@@ -64,25 +57,18 @@ class Memo
   def update_memo_details(params)
     return unless @memo_ids.include?(params['id'])
 
-    # 編集されたメモデータ（ハッシュ形式）を作成する
     edited_memo = { params['id'] => { 'title' => params['title'], 'content' => params['content'] } }
-
-    # 更新されたメモIDから、既存メモを抽出して上書きする
     updated_memo = @memo_lists.map do |m|
       m.key?(edited_memo.keys.first) ? edited_memo : m
     end
-
-    # JSONを更新する
     updated_memos = JSON.generate({ "latest_id": @latest_memo_id, "memo_lists": updated_memo })
 
     save_memo_data(updated_memos)
   end
 
   def delete_memo(params)
-    # ルーティングのIDが存在しない場合、メソッドから抜ける
     return unless @memo_ids.include?(params['id'])
 
-    # 削除するメモのIDと、データベース内のIDが一致した場合、削除処理を実行する
     @memo_lists.delete_if do |m|
       m.key?(params['id'])
     end
@@ -92,7 +78,6 @@ class Memo
   end
 
   def save_memo_data(updated_memos)
-    # JSONファイルに保存する
     File.open(DB_FILE_NAME, 'w') do |file|
       file.write(updated_memos)
     end
@@ -110,7 +95,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = Memo.parse(DB_FILE_NAME).generate_memo_lists
+  @memos = Memo.parse(DB_FILE_NAME).show_memo_lists
 
   erb :index
 end
