@@ -12,32 +12,13 @@ mkdir sinatra_practice
 cd sinatra_practice
 ```
 
-2. Gemfileを確認
-
-Gemfileが下記のとおりになっていることを確認します。
-
-```
-# frozen_string_literal: true
-source 'https://rubygems.org'
-
-gem 'erb_lint', require: false
-gem 'sinatra'
-gem 'webrick'
-
-group :development do
-  gem 'rubocop-fjord', require: false
-end
-```
-
-3. `bundle install`を実行する
+2. `bundle install`を実行する
    
 下記コマンドを実行します。
 
 ```
 bundle install
 ```
-
-実行後、`Gemfile.lock`が生成されたことを確認します。
 
 ## Sinatraを実行する
 1. Sinatraを起動
@@ -53,13 +34,13 @@ ruby main.rb
 Sinatraが起動できたら、ブラウザのURL欄に「`localhost:4567`」を入力してアクセスできることを確認します。
 
 ## コードのチェック方法
-1. `rubocop-fjord`を実行し、rbファイルをチェック。
+1. `rubocop-fjord`を実行し、rbファイルをチェックします。
 
 ```
 rubocop
 ```
 
-2. `ERB Lint`を実行し、erbファイルををチェック。
+2. `ERB Lint`を実行し、erbファイルをチェックします。
 
 ```
 bundle exec erblint --lint-all
