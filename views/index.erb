@@ -1,9 +1,13 @@
 <main>
   <article>
     <%= render(:erb, :header) %>
+    <% if @memos.empty? %>
+    <p>メモはありません</p>
+    <% else %>
     <ul>
-    <% @memos.map do |memo| %>
+      <% @memos.map do |memo| %>
       <li><a href="memos/<%= memo.keys.first %>"><%= h(memo.values.first["title"]) %></a></li>
+      <% end %>
     <% end %>
     </ul>
   </article>
