@@ -3,7 +3,9 @@
 require 'json'
 require 'sinatra'
 
-DB_FILE_NAME = 'db.json'
+# TODO:提出時に削除する
+require 'sinatra/reloader'
+require 'debug'
 
 before do
   @app_title = 'メモアプリ'
@@ -16,57 +18,65 @@ helpers do
 end
 
 class MemoDB
-  def self.show_memo_lists
+  DB_FILE_NAME = 'db.json'
+
+  def self.read_memos
     generate_memo_lists['memo_lists']
   end
 
-  def self.create_new_memo(title, content)
-    latest_id = generate_memo_lists['latest_id'] += 1
-    memo_lists = generate_memo_lists['memo_lists']
+  def self.create_memo(title, content)
+    memos = generate_memo_lists
+    latest_id = memos['latest_id'] + 1
+    memo_lists = memos['memo_lists']
 
     new_memo = { latest_id => { 'title' => title, 'content' => content } }
-    updated_lists = memo_lists.push new_memo
-    updated_memos = JSON.generate({ latest_id:, memo_lists: updated_lists })
+    memo_lists.push new_memo
 
-    save_memo_data(updated_memos)
+    changed_memos = { latest_id:, memo_lists: }
+    save_memo_data(changed_memos)
   end
 
-  def self.show_memo_details(memo_id)
-    memo_lists = generate_memo_lists['memo_lists']
-    memo = memo_lists.find { |list| list[memo_id] }
+  def self.read_memo(memo_id)
+    memos = generate_memo_lists['memo_lists']
+    # TODO: メモIDとハッシュのキーで照合する
+    memo = memos.find { |list| list[memo_id] }
     return nil if memo.nil?
 
     { title: memo[memo_id]['title'], content: memo[memo_id]['content'] }
   end
 
   def self.update_memo_details(params)
-    latest_id = generate_memo_lists['latest_id']
-    memo_lists = generate_memo_lists['memo_lists']
+    memos = generate_memo_lists
+    latest_id = memos['latest_id']
+    memo_lists = memos['memo_lists']
 
     edited_memo = { params['id'] => { 'title' => params['title'], 'content' => params['content'] } }
     updated_lists = memo_lists.map do |list|
       list.key?(edited_memo.keys.first) ? edited_memo : list
     end
-    updated_memos = JSON.generate({ latest_id:, memo_lists: updated_lists })
 
-    save_memo_data(updated_memos)
+    changed_memos = { latest_id:, memo_lists: updated_lists }
+    save_memo_data(changed_memos)
   end
 
   def self.delete_memo(params)
-    latest_id = generate_memo_lists['latest_id']
-    memo_lists = generate_memo_lists['memo_lists']
+    memos = generate_memo_lists
+    latest_id = memos['latest_id']
+    memo_lists = memos['memo_lists']
 
     memo_lists.delete_if do |list|
       list.key?(params['id'])
     end
 
-    deleted_memos = JSON.generate({ latest_id:, memo_lists: })
-    save_memo_data(deleted_memos)
+    changed_memos = { latest_id:, memo_lists: }
+    save_memo_data(changed_memos)
   end
 
-  def self.save_memo_data(updated_memos)
+  def self.save_memo_data(changed_memos)
+    converted_memos = JSON.generate(changed_memos)
+
     File.open(DB_FILE_NAME, 'w') do |file|
-      file.write(updated_memos)
+      file.write(converted_memos)
     end
   end
 
@@ -81,7 +91,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = MemoDB.show_memo_lists
+  @memos = MemoDB.read_memos
 
   erb :index
 end
@@ -91,21 +101,21 @@ get '/memos/create' do
 end
 
 post '/memos/new' do
-  MemoDB.create_new_memo(@params['title'], @params['content'])
+  MemoDB.create_memo(@params['title'], @params['content'])
 
   redirect '/memos'
   erb :index
 end
 
 get '/memos/:id' do
-  @memo = MemoDB.show_memo_details(@params['id'])
+  @memo = MemoDB.read_memo(@params['id'])
   pass if @memo.nil?
 
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = MemoDB.show_memo_details(@params['id'])
+  @memo = MemoDB.read_memo(@params['id'])
 
   erb :edit
 end
