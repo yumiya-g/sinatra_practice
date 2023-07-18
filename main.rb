@@ -29,20 +29,18 @@ class MemoDB
     latest_id = memos['latest_id'] + 1
     memo_lists = memos['memo_lists']
 
-    new_memo = { latest_id => { 'title' => title, 'content' => content } }
-    memo_lists.push new_memo
-
+    new_memo = { 'title' => title, 'content' => content }
+    memos['memo_lists'][latest_id] = new_memo
     changed_memos = { latest_id:, memo_lists: }
     save_memo_data(changed_memos)
   end
 
   def self.read_memo(memo_id)
     memos = generate_memo_lists['memo_lists']
-    # TODO: メモIDとハッシュのキーで照合する
-    memo = memos.find { |list| list[memo_id] }
+    memo = memos[memo_id]
     return nil if memo.nil?
 
-    { title: memo[memo_id]['title'], content: memo[memo_id]['content'] }
+    { title: memo['title'], content: memo['content'] }
   end
 
   def self.update_memo_details(params)
@@ -50,12 +48,8 @@ class MemoDB
     latest_id = memos['latest_id']
     memo_lists = memos['memo_lists']
 
-    edited_memo = { params['id'] => { 'title' => params['title'], 'content' => params['content'] } }
-    updated_lists = memo_lists.map do |list|
-      list.key?(edited_memo.keys.first) ? edited_memo : list
-    end
-
-    changed_memos = { latest_id:, memo_lists: updated_lists }
+    memo_lists[params['id']] = { 'title' => params['title'], 'content' => params['content'] }
+    changed_memos = { latest_id:, memo_lists: }
     save_memo_data(changed_memos)
   end
 
@@ -64,10 +58,7 @@ class MemoDB
     latest_id = memos['latest_id']
     memo_lists = memos['memo_lists']
 
-    memo_lists.delete_if do |list|
-      list.key?(params['id'])
-    end
-
+    memo_lists.delete(params['id'])
     changed_memos = { latest_id:, memo_lists: }
     save_memo_data(changed_memos)
   end

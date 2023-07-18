@@ -6,7 +6,7 @@
     <% else %>
     <ul>
       <% @memos.map do |memo| %>
-      <li><a href="memos/<%= memo.keys.first %>"><%= h(memo.values.first["title"]) %></a></li>
+      <li><a href="memos/<%= memo.first %>"><%= h(memo.last["title"]) %></a></li>
       <% end %>
     <% end %>
     </ul>
