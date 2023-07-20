@@ -1,6 +1,9 @@
 <main>
   <article>
-    <%= render(:erb, :header) %>
+    <header>
+      <h1><a href="/"><%= @app_title %></a></h1>
+      <p><a class="button" href="memos/create">追加する</a></p>
+    </header>
     <% if @memos.empty? %>
     <p>メモはありません</p>
     <% else %>

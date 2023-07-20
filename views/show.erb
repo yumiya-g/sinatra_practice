@@ -8,7 +8,7 @@
 
       <div class="col">
         <ul class="container">
-          <li><button onclick="location.href='<%= @params["id"] %>/edit'">変更</button></li>
+          <li><a class="button" href="<%= @params["id"] %>/edit">変更</a></li>
           <li>
             <form method="post" action="/memos/<%= @params["id"] %>/delete">
               <input type="hidden" name="_method" value="delete">

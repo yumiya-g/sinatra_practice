@@ -19,12 +19,30 @@ main {
     padding: 30px;
     max-width: 1000px;
 
+    & a.button {
+      align-items: center;
+      background-color: #efefef;
+      border: 1px solid #767676;
+      border-radius: 3px;
+      display: flex;
+      height: 3em;
+      justify-content: center;      
+      text-decoration: none;
+      width: 8em;
+      &:hover{
+        background: #dbdbdb;
+      }
+      &:visited{
+        color: #000;
+      }
+    }
+
     @media (min-width: 400px) {
       width: 96%;
     }
     & header {
+      align-items: center;
       border-bottom: 1px solid #cdcdcd;
-      padding-bottom: 1.125em;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -35,16 +53,10 @@ main {
         color: red;
         & a {
           text-decoration: none;
-          
         }
       }
       & p {
         margin: 0;
-        & button {
-          border: 1px solid #a7a7a7;
-          border-radius: 5px;
-          padding: 0.2rem 0.4rem;
-        }
       }
     }
     & ul {
@@ -87,6 +99,7 @@ main {
           }
         }
         & button {
+          cursor: pointer;
           display: block;
           height: 3em;
           margin: 0 auto;
