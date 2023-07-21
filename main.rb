@@ -3,10 +3,6 @@
 require 'json'
 require 'sinatra'
 
-# TODO:提出時に削除する
-require 'sinatra/reloader'
-require 'debug'
-
 before do
   @app_title = 'メモアプリ'
 end
