@@ -8,8 +8,8 @@
     <p>メモはありません</p>
     <% else %>
     <ul>
-      <% @memos.map do |memo| %>
-      <li><a href="memos/<%= memo.first %>"><%= h(memo.last["title"]) %></a></li>
+      <% @memos.map do |id, values| %>
+      <li><a href="memos/<%= id %>"><%= h(values["title"]) %></a></li>
       <% end %>
     <% end %>
     </ul>

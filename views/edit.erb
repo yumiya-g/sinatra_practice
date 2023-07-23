@@ -5,7 +5,7 @@
       <p>ID:<%= @params["id"] %></p>
       <div class="col">
         <form method="post" action="/memos/<%= @params["id"] %>/edit">
-        <input type="hidden" name="_method" value="patch">
+          <input type="hidden" name="_method" value="patch">
           <div class="col">
             <label>タイトル：<input type="text" name="title" placeholder="メモのタイトル" value="<%= h(@memo[:title]) %>"></label>
           </div>
