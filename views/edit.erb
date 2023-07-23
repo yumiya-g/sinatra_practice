@@ -7,10 +7,10 @@
         <form method="post" action="/memos/<%= @params["id"] %>/edit">
           <input type="hidden" name="_method" value="patch">
           <div class="col">
-            <label>タイトル：<input type="text" name="title" placeholder="メモのタイトル" value="<%= h(@memo[:title]) %>"></label>
+            <label>タイトル：<input type="text" name="title" placeholder="メモのタイトル" value="<%= h(@memo['title']) %>"></label>
           </div>
           <div class="col">
-            <label>内容：<textarea name="content" placeholder="メモの内容"><%= h(@memo[:content]) %></textarea></label>
+            <label>内容：<textarea name="content" placeholder="メモの内容"><%= h(@memo['content']) %></textarea></label>
           </div>
           <div class="col">
             <button type="submit">保存する</button>

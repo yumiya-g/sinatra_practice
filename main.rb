@@ -3,6 +3,10 @@
 require 'json'
 require 'sinatra'
 
+#TODO:提出時に削除する
+require 'sinatra/reloader'
+require 'debug'
+
 before do
   @app_title = 'メモアプリ'
 end
@@ -33,10 +37,7 @@ class MemoDB
 
   def self.read_memo(memo_id)
     memos = generate_memo_lists['memo_lists']
-    memo = memos[memo_id]
-    return nil if memo.nil?
-
-    { title: memo['title'], content: memo['content'] }
+    memos[memo_id]
   end
 
   def self.update_memo_details(params)
