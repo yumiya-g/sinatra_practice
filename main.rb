@@ -43,10 +43,9 @@ class MemoDB
     memos = generate_memo_lists
     latest_id = memos['latest_id']
     memo_lists = memos['memo_lists']
-
-    memo_lists[params['id']] = { 'title' => params['title'], 'content' => params['content'] }
-    changed_memos = { latest_id:, memo_lists: }
-    save_memo_data(changed_memos)
+    
+    memo_lists[params['id']] = params.slice(:title, :content)
+    save_memo_data(latest_id, memo_lists)
   end
 
   def self.delete_memo(params)
@@ -55,8 +54,7 @@ class MemoDB
     memo_lists = memos['memo_lists']
 
     memo_lists.delete(params['id'])
-    changed_memos = { latest_id:, memo_lists: }
-    save_memo_data(changed_memos)
+    save_memo_data(latest_id, memo_lists)
   end
 
   def self.save_memo_data(latest_id, memo_lists)
