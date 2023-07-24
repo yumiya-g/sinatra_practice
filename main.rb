@@ -3,7 +3,7 @@
 require 'json'
 require 'sinatra'
 
-#TODO:提出時に削除する
+# TODO:提出時に削除する
 require 'sinatra/reloader'
 require 'debug'
 
@@ -31,8 +31,7 @@ class MemoDB
 
     new_memo = { 'title' => title, 'content' => content }
     memos['memo_lists'][latest_id] = new_memo
-    changed_memos = { latest_id:, memo_lists: }
-    save_memo_data(changed_memos)
+    save_memo_data(latest_id, memo_lists)
   end
 
   def self.read_memo(memo_id)
@@ -60,10 +59,9 @@ class MemoDB
     save_memo_data(changed_memos)
   end
 
-  def self.save_memo_data(changed_memos)
-    converted_memos = JSON.generate(changed_memos)
-
+  def self.save_memo_data(latest_id, memo_lists)
     File.open(DB_FILE_NAME, 'w') do |file|
+      converted_memos = JSON.generate({ latest_id:, memo_lists: })
       file.write(converted_memos)
     end
   end
