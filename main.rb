@@ -21,35 +21,35 @@ class MemoDB
   DB_FILE_NAME = 'db.json'
 
   def self.read_memos
-    generate_memo_lists['memo_lists']
+    load_memos[:memo_lists]
   end
 
   def self.create_memo(title, content)
-    memos = generate_memo_lists
-    latest_id = memos['latest_id'] + 1
-    memo_lists = memos['memo_lists']
+    memos = load_memos
+    latest_id = memos[:latest_id] + 1
+    memo_lists = memos[:memo_lists]
 
     new_memo = { 'title' => title, 'content' => content }
-    memos['memo_lists'][latest_id] = new_memo
+    memos[:memo_lists][latest_id] = new_memo
     save_memo_data(latest_id, memo_lists)
   end
 
   def self.read_memo(memo_id)
-    memos = generate_memo_lists['memo_lists']
+    memos = load_memos['memo_lists']
     memos[memo_id]
   end
 
   def self.update_memo_details(params)
-    memos = generate_memo_lists
+    memos = load_memos
     latest_id = memos['latest_id']
     memo_lists = memos['memo_lists']
-    
+
     memo_lists[params['id']] = params.slice(:title, :content)
     save_memo_data(latest_id, memo_lists)
   end
 
   def self.delete_memo(params)
-    memos = generate_memo_lists
+    memos = load_memos
     latest_id = memos['latest_id']
     memo_lists = memos['memo_lists']
 
@@ -64,9 +64,9 @@ class MemoDB
     end
   end
 
-  def self.generate_memo_lists
+  def self.load_memos
     file = File.open(DB_FILE_NAME, 'r')
-    JSON.parse(file.read)
+    JSON.parse(file.read, symbolize_names: true)
   end
 end
 
@@ -76,7 +76,6 @@ end
 
 get '/memos' do
   @memos = MemoDB.read_memos
-
   erb :index
 end
 
