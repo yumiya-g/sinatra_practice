@@ -31,33 +31,33 @@ class MemoDB
 
     new_memo = { 'title' => title, 'content' => content }
     memos[:memo_lists][latest_id] = new_memo
-    save_memo_data(latest_id, memo_lists)
+    save_memo(latest_id, memo_lists)
   end
 
   def self.read_memo(memo_id)
-    memos = load_memos['memo_lists']
-    memos[memo_id]
+    memos = load_memos[:memo_lists]
+    memos[memo_id.to_sym]
   end
 
   def self.update_memo_details(params)
     memos = load_memos
-    latest_id = memos['latest_id']
-    memo_lists = memos['memo_lists']
+    latest_id = memos[:latest_id]
+    memo_lists = memos[:memo_lists]
 
     memo_lists[params['id']] = params.slice(:title, :content)
-    save_memo_data(latest_id, memo_lists)
+    save_memo(latest_id, memo_lists)
   end
 
   def self.delete_memo(params)
     memos = load_memos
-    latest_id = memos['latest_id']
-    memo_lists = memos['memo_lists']
+    latest_id = memos[:latest_id]
+    memo_lists = memos[:memo_lists]
 
-    memo_lists.delete(params['id'])
-    save_memo_data(latest_id, memo_lists)
+    memo_lists.delete(params['id'].to_sym)
+    save_memo(latest_id, memo_lists)
   end
 
-  def self.save_memo_data(latest_id, memo_lists)
+  def self.save_memo(latest_id, memo_lists)
     File.open(DB_FILE_NAME, 'w') do |file|
       converted_memos = JSON.generate({ latest_id:, memo_lists: })
       file.write(converted_memos)

@@ -4,12 +4,12 @@
       <h1><a href="/"><%= @app_title %></a></h1>
       <p><a class="button" href="memos/create">追加する</a></p>
     </header>
-    <% if @memos.empty? %>
+    <% if @memos.nil? %>
     <p>メモはありません</p>
     <% else %>
     <ul>
       <% @memos.map do |id, values| %>
-      <li><a href="memos/<%= id %>"><%= h(values["title"]) %></a></li>
+      <li><a href="memos/<%= id.to_s %>"><%= h(values[:title]) %></a></li>
       <% end %>
     <% end %>
     </ul>
