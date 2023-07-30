@@ -2,6 +2,7 @@
 
 require 'json'
 require 'sinatra'
+require 'securerandom'
 
 # TODO:提出時に削除する
 require 'sinatra/reloader'
@@ -21,44 +22,39 @@ class MemoDB
   DB_FILE_NAME = 'db.json'
 
   def self.read_memos
-    load_memos[:details]
+    load_memos
   end
 
   def self.create_memo(title, content)
     memos = load_memos
-    latest_id = memos[:latest_id] + 1
-    contents = memos[:details]
+    id = SecureRandom.uuid
 
-    contents[latest_id] = { 'title' => title, 'content' => content }
-    save_memo(latest_id, contents)
+    memos[id] = { 'title' => title, 'content' => content }
+    save_memo(memos)
   end
 
-  def self.read_memo(memo_id)
-    memos = load_memos[:details]
-    memos[memo_id.to_sym]
+  def self.read_memo(id)
+    memos = load_memos
+    memos[id.to_sym]
   end
 
   def self.update_memo_details(params)
     memos = load_memos
-    latest_id = memos[:latest_id]
-    contents = memos[:details]
 
-    contents[params['id']] = params.slice(:title, :content)
-    save_memo(latest_id, contents)
+    memos[params['id'].to_sym] = params.slice('title', 'content')
+    save_memo(memos)
   end
 
   def self.delete_memo(params)
     memos = load_memos
-    latest_id = memos[:latest_id]
-    contents = memos[:details]
 
-    contents.delete(params['id'].to_sym)
-    save_memo(latest_id, contents)
+    memos.delete(params['id'].to_sym)
+    save_memo(memos)
   end
 
-  def self.save_memo(latest_id, contents)
+  def self.save_memo(memos)
     File.open(DB_FILE_NAME, 'w') do |file|
-      converted_memos = JSON.generate({ latest_id:, details: contents })
+      converted_memos = JSON.generate(memos)
       file.write(converted_memos)
     end
   end
