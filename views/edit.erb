@@ -1,7 +1,7 @@
 <main>
   <article>
     <%= render(:erb, :header) %>
-    <div id="edit">
+    <div class="form">
       <p>ID:<%= @params["id"] %></p>
       <div class="col">
         <form method="post" action="/memos/<%= @params["id"] %>/edit">

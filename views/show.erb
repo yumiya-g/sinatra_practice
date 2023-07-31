@@ -1,7 +1,7 @@
 <main>
   <article>
     <%= render(:erb, :header) %>
-    <div id="edit">
+    <div class="form">
       <p>ID:<%= @params["id"] %></p>
       <h1><%= h(@memo[:title]) %></h1>
       <p><%= h(@memo[:content]) %></p>
