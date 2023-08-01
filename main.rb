@@ -17,15 +17,11 @@ end
 class MemoDB
   DB_FILE_NAME = 'db.json'
 
-  def self.read_memos
-    load_memos
-  end
-
-  def self.create_memo(title, content)
+  def self.create_memo(params)
     memos = load_memos
     id = SecureRandom.uuid
 
-    memos[id] = { 'title' => title, 'content' => content }
+    memos[id.to_sym] = { title: params['title'], content: params['content'] }
     save_memo(memos)
   end
 
@@ -34,7 +30,7 @@ class MemoDB
     memos[id.to_sym]
   end
 
-  def self.update_memo_details(params)
+  def self.update_memo(params)
     memos = load_memos
 
     memos[params['id'].to_sym] = params.slice('title', 'content')
@@ -66,7 +62,7 @@ get '/' do
 end
 
 get '/memos' do
-  @memos = MemoDB.read_memos
+  @memos = MemoDB.load_memos
   erb :index
 end
 
@@ -75,7 +71,7 @@ get '/memos/create' do
 end
 
 post '/memos/new' do
-  MemoDB.create_memo(@params['title'], @params['content'])
+  MemoDB.create_memo(@params)
 
   redirect '/memos'
   erb :index
@@ -95,7 +91,7 @@ get '/memos/:id/edit' do
 end
 
 patch '/memos/:id/edit' do
-  MemoDB.update_memo_details(@params)
+  MemoDB.update_memo(@params)
 
   redirect "/memos/#{@params['id']}"
   erb :show
