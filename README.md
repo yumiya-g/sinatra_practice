@@ -1,5 +1,5 @@
 # プラクティス提出
-[Sinatra を使ってWebアプリケーションの基本を理解する](https://bootcamp.fjord.jp/practices/157)
+[WebアプリからのDB利用](https://bootcamp.fjord.jp/practices/179)
 
 
 ## bundlerの設定
