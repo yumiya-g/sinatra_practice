@@ -3,8 +3,8 @@
     <%= render(:erb, :header) %>
     <div class="form">
       <p>ID:<%= @params["id"] %></p>
-      <h1><%= h(@memo[0]['title']) %></h1>
-      <p><%= h(@memo[0]['content']) %></p>
+      <h1><%= h(@memo[:title]) %></h1>
+      <p><%= h(@memo[:content]) %></p>
       <div class="col">
         <ul class="container">
           <li><a class="button" href="<%= @params["id"] %>/edit">変更</a></li>
