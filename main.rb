@@ -37,11 +37,7 @@ class MemoDB
 
   def self.read_memo(id)
     sql = 'SELECT * FROM memos WHERE id = $1'
-    begin
-      fetch_database.exec_params(sql, [id])
-    rescue StandardError
-      nil
-    end
+    fetch_database.exec_params(sql, [id])
   end
 
   def self.update_memo(params)
@@ -58,8 +54,6 @@ class MemoDB
 
   def self.save_memo(sql, placeholders)
     fetch_database.exec_params(sql, placeholders)
-  rescue StandardError
-    nil
   end
 end
 
