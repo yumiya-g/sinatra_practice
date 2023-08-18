@@ -1,5 +1,5 @@
 # プラクティス提出
-[Sinatra を使ってWebアプリケーションの基本を理解する](https://bootcamp.fjord.jp/practices/157)
+[WebアプリからのDB利用](https://bootcamp.fjord.jp/practices/179)
 
 
 ## bundlerの設定
@@ -20,13 +20,72 @@ cd sinatra_practice
 bundle install
 ```
 
+## データベースを作成する
+1. PostgreSQLをインストール
+
+HomebrewでPostgreSQLをインストールします。
+
+```
+brew install postgresql
+```
+
+2. PostgreSQLを起動
+
+PostgreSQLを起動します。
+```
+brew services start postgresql
+```
+
+1. データベースを確認
+   
+データベースを確認します。\
+今回はデータベース「postgres」を使用します。
+```
+psql -l
+```
+
+4. データベースにログインしてユーザーを作る
+
+デフォルトのMacユーザーでログインし、任意のユーザー（スーパーユーザー）を作成します。
+```sql
+psql -U macのユーザ名 postgres
+
+postgres=# create user 新規ユーザー名 with SUPERUSER;
+```
+
+新規ユーザーでログインします。
+```sql
+psql -U 新規ユーザー名 postgres 
+```
+
+5. テーブルを作成する
+
+データベースにログイン後、memosテーブルを作成します。
+
+```sql
+CREATE TABLE memos (
+	id UUID PRIMARY KEY,
+	title VARCHAR(64),
+	content VARCHAR(128)
+);
+```
+
+6. 作成したテーブルを確認する
+
+memosテーブルが作成されたことを確認します。
+
+```sql
+postgres=# \d memos
+```
+
+
 ## Sinatraを実行する
 1. Sinatraを起動
 
-ターミナルを起動して、下記コマンドを実行します。
+ターミナルを起動して、下記コマンドで実行します。
 
 ```
-ruby main.rb
+bundle exec ruby main.rb
 ```
 
 2. `localhost`にアクセス
