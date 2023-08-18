@@ -3,7 +3,6 @@
 require 'json'
 require 'sinatra'
 require 'securerandom'
-require 'pg'
 
 before do
   @app_title = 'メモアプリ'
@@ -16,46 +15,45 @@ helpers do
 end
 
 class MemoDB
-  def self.fetch_database
-    PG::Connection.open(dbname: 'postgres')
-  end
-
-  def self.load_memos
-    fetch_database.exec('SELECT * FROM memos')
-  end
+  DB_FILE_NAME = 'db.json'
 
   def self.create_memo(params)
+    memos = load_memos
     id = SecureRandom.uuid
-    sql = 'INSERT INTO memos(id, title, content) VALUES ($1, $2, $3)'
-    placeholders = [id, params['title'], params['content']]
-    save_memo(sql, placeholders)
+
+    memos[id.to_sym] = { title: params['title'], content: params['content'] }
+    save_memo(memos)
   end
 
   def self.read_memo(id)
-    sql = 'SELECT * FROM memos WHERE id = $1'
-    begin
-      fetch_database.exec_params(sql, [id])
-    rescue StandardError
-      nil
-    end
+    memos = load_memos
+    memos[id.to_sym]
   end
 
   def self.update_memo(params)
-    sql = 'UPDATE memos SET title = $1, content = $2 WHERE id = $3'
-    placeholders = [params['title'], params['content'], params['id']]
-    save_memo(sql, placeholders)
+    memos = load_memos
+
+    memos[params['id'].to_sym] = params.slice('title', 'content')
+    save_memo(memos)
   end
 
   def self.delete_memo(params)
-    sql = 'DELETE FROM memos WHERE id = $1'
-    placeholders = [params['id']]
-    save_memo(sql, placeholders)
+    memos = load_memos
+
+    memos.delete(params['id'].to_sym)
+    save_memo(memos)
   end
 
-  def self.save_memo(sql, placeholders)
-    fetch_database.exec_params(sql, placeholders)
-  rescue StandardError
-    nil
+  def self.save_memo(memos)
+    File.open(DB_FILE_NAME, 'w') do |file|
+      converted_memos = JSON.generate(memos)
+      file.write(converted_memos)
+    end
+  end
+
+  def self.load_memos
+    file = File.open(DB_FILE_NAME, 'r')
+    JSON.parse(file.read, symbolize_names: true)
   end
 end
 
@@ -74,6 +72,7 @@ end
 
 post '/memos/new' do
   MemoDB.create_memo(@params)
+
   redirect '/memos'
   erb :index
 end
@@ -87,7 +86,7 @@ end
 
 get '/memos/:id/edit' do
   @memo = MemoDB.read_memo(@params['id'])
-  pass if @memo.nil?
+
   erb :edit
 end
 
