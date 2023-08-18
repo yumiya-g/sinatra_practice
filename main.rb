@@ -20,12 +20,10 @@ helpers do
 end
 
 class MemoDB
-  def self.fetch_database
-    PG::Connection.open(dbname: 'postgres')
-  end
+  MEMOS = PG::Connection.open(dbname: 'postgres')
 
   def self.load_memos
-    fetch_database.exec('SELECT * FROM memos')
+    MEMOS.exec('SELECT * FROM memos')
   end
 
   def self.create_memo(params)
@@ -37,7 +35,7 @@ class MemoDB
 
   def self.read_memo(id)
     sql = 'SELECT * FROM memos WHERE id = $1'
-    fetch_database.exec_params(sql, [id])
+    MEMOS.exec_params(sql, [id])
   end
 
   def self.update_memo(params)
@@ -53,7 +51,7 @@ class MemoDB
   end
 
   def self.save_memo(sql, placeholders)
-    fetch_database.exec_params(sql, placeholders)
+    MEMOS.exec_params(sql, placeholders)
   end
 end
 
