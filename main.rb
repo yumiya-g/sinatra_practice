@@ -5,10 +5,6 @@ require 'sinatra'
 require 'securerandom'
 require 'pg'
 
-# TODO:提出時に削除する
-require 'sinatra/reloader'
-require 'debug'
-
 before do
   @app_title = 'メモアプリ'
 end
@@ -20,47 +16,55 @@ helpers do
 end
 
 class MemoDB
-  MEMOS = PG::Connection.open(dbname: 'postgres')
-
-  def self.load_memos
-    MEMOS.exec('SELECT * FROM memos')
+  def initialize(connection)
+    @connection = connection
   end
 
-  def self.create_memo(params)
+  def read_memos
+    @connection.exec('SELECT * FROM memos')
+  end
+
+  def create_memo(params)
     id = SecureRandom.uuid
     sql = 'INSERT INTO memos(id, title, content) VALUES ($1, $2, $3)'
     placeholders = [id, params['title'], params['content']]
     save_memo(sql, placeholders)
   end
 
-  def self.read_memo(id)
-    sql = 'SELECT * FROM memos WHERE id = $1'
-    MEMOS.exec_params(sql, [id])
+  def read_memo(id)
+    memos = @connection.exec('SELECT * FROM memos')
+    memos.select do |memo|
+      { 'id' => memo['id'].to_s, 'title' => memo['title'].to_s, 'content' => memo['content'].to_s } if id == memo['id']
+    end
   end
 
-  def self.update_memo(params)
+  def update_memo(params)
     sql = 'UPDATE memos SET title = $1, content = $2 WHERE id = $3'
     placeholders = [params['title'], params['content'], params['id']]
     save_memo(sql, placeholders)
   end
 
-  def self.delete_memo(params)
+  def delete_memo(params)
     sql = 'DELETE FROM memos WHERE id = $1'
     placeholders = [params['id']]
     save_memo(sql, placeholders)
   end
 
-  def self.save_memo(sql, placeholders)
-    MEMOS.exec_params(sql, placeholders)
+  def save_memo(sql, placeholders)
+    @connection.exec_params(sql, placeholders)
+    @connection.exec('SELECT * FROM memos')
   end
 end
+
+connection = PG::Connection.open(dbname: 'postgres')
+memo_instance = MemoDB.new(connection)
 
 get '/' do
   redirect '/memos'
 end
 
 get '/memos' do
-  @memos = MemoDB.load_memos
+  @memos = memo_instance.read_memos
   erb :index
 end
 
@@ -69,27 +73,24 @@ get '/memos/create' do
 end
 
 post '/memos/new' do
-  MemoDB.create_memo(@params)
+  memo_instance.create_memo(@params)
   redirect '/memos'
   erb :index
 end
 
 get '/memos/:id' do
-  @memo = MemoDB.read_memo(@params['id'])
-  pass if @memo.nil?
-
+  @memo = memo_instance.read_memo(@params['id'])
+  redirect not_found if @memo.empty?
   erb :show
 end
 
 get '/memos/:id/edit' do
-  @memo = MemoDB.read_memo(@params['id'])
-  pass if @memo.nil?
+  @memo = memo_instance.read_memo(@params['id'])
   erb :edit
 end
 
 patch '/memos/:id/edit' do
-  MemoDB.update_memo(@params)
-
+  memo_instance.update_memo(@params)
   redirect "/memos/#{@params['id']}"
   erb :show
 end
@@ -99,12 +100,11 @@ get '/memos/*' do
 end
 
 delete '/memos/:id/delete' do
-  MemoDB.delete_memo(@params)
-
+  memo_instance.delete_memo(@params)
   redirect '/'
   erb :index
 end
 
 not_found do
-  'ページが存在しません!!'
+  'メモが存在しません!!'
 end
